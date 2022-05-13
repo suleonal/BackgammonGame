@@ -7,6 +7,8 @@ import tr.com.argela.BackgammonGame.be.exception.GameSessionNotFoundException;
 import tr.com.argela.BackgammonGame.be.model.BackgammonBoard;
 
 public class BackgammonRepositoryImpl implements BackgommonRepository {
+
+    //backgammonboard verilerine erişmek için 
     Map<String, BackgammonBoard> gameSessions = new LinkedHashMap<>();
 
     @Override
@@ -29,7 +31,6 @@ public class BackgammonRepositoryImpl implements BackgommonRepository {
         if (BackgammonBoard == null) {
             throw new GameSessionNotFoundException(sessionId);
         }
-
 
     }
 }

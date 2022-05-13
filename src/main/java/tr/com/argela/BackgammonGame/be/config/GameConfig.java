@@ -4,7 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import lombok.Getter;
-import tr.com.argela.BackgammonGame.be.repository.BackgammonRepository;
+
+import tr.com.argela.BackgammonGame.be.repository.BackgommonRepository;
 import tr.com.argela.BackgammonGame.be.repository.BackgammonRepositoryImpl;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 @Getter
 public class GameConfig {
 
-    @Value("#{new Integer('${Backgammon.general.pitSize}')}")
+    @Value("#{new Integer('${backgammon.general.pitSize}')}")
     int pitSize;
 
     @Bean
-    public BackgammonRepository getBackgammonRepository() {
+    public BackgommonRepository getBackgammonRepository() {
         return new BackgammonRepositoryImpl();
     }
-    
+
 }

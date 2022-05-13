@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tr.com.argela.BackgammonGame.be.config.GameConfig;
+import tr.com.argela.BackgammonGame.be.constant.Player;
 import tr.com.argela.BackgammonGame.be.exception.GameException;
 import tr.com.argela.BackgammonGame.be.model.BackgammonBoard;
 import tr.com.argela.BackgammonGame.be.repository.BackgommonRepository;
@@ -15,34 +16,46 @@ import tr.com.argela.BackgammonGame.be.repository.BackgommonRepository;
 @Service
 public class BackgammonService {
 
-
     Logger logger = LoggerFactory.getLogger(BackgammonService.class);
-    
+
+    Player player;
+
     @Autowired
-    BackgommonRepository BackgammonRepository;
-    
+    BackgommonRepository backgammonRepository;
+
     @Autowired
     GameConfig gameConfig;
 
+    int zar = (int) Math.random() * 5 + 1;
 
-
-    public String createNewGame(){
+    public String createNewGame() {
         String sessionId = createSessionId();
-        BackgammonBoard BackgammonBoard = new BackgammonBoard(sessionId, gameConfig.getPitSize());
-        BackgammonRepository.save(sessionId, BackgammonBoard);
+        BackgammonBoard backgammonBoard = new BackgammonBoard(sessionId, gameConfig.getPitSize());
+        backgammonRepository.save(sessionId, backgammonBoard);
         if (logger.isInfoEnabled()) {
             logger.debug("[NewGame] sessionId:" + sessionId + " , pitSize:" + gameConfig.getPitSize());
         }
+    
         return sessionId;
+      
     }
 
     private String createSessionId() {
         return UUID.randomUUID().toString();
     }
 
-    public BackgammonBoard getBackgammonBoard(String sessionId) throws GameException{
-        return BackgammonRepository.getBySessionId(sessionId);
-        
+    public BackgammonBoard getBackgammonBoard(String sessionId) throws GameException {
+        return backgammonRepository.getBySessionId(sessionId);
+
     }
-    
+    public void rollDice(String sessionId) throws GameException{
+        BackgammonBoard board= getBackgammonBoard(sessionId);
+        board.rollDice();
+    }
+
+    public void move(String sessionId) throws GameException{
+        BackgammonBoard board = getBackgammonBoard(sessionId);
+        //board.move();
+    }
+
 }
