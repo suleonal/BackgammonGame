@@ -6,14 +6,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.websocket.Session;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
 import tr.com.argela.BackgammonGame.be.constant.GameState;
 import tr.com.argela.BackgammonGame.be.constant.Player;
+import tr.com.argela.BackgammonGame.be.exception.DestionationPunishZoneException;
+import tr.com.argela.BackgammonGame.be.exception.GameException;
+import tr.com.argela.BackgammonGame.be.exception.PitIsBlokedByComponentException;
+import tr.com.argela.BackgammonGame.be.exception.PunishZoneHasNoStoneException;
+import tr.com.argela.BackgammonGame.be.exception.TreasureZoneException;
+import tr.com.argela.BackgammonGame.be.exception.WrongMoveException;
 
 @Getter
 @Setter
@@ -28,6 +32,9 @@ public class BackgammonBoard {
     Map<Integer, List<Stone>> pits;
 
     List<Integer> moves = new ArrayList<>();
+
+    Map<Player, Integer> punishZone = new HashMap();
+    Map<Player, Integer> treasureZone = new HashMap();
 
     public BackgammonBoard(String sessionId, int pitSize) {
         this.sessionId = sessionId;
@@ -56,23 +63,100 @@ public class BackgammonBoard {
         addStone(Player.TWO, 7, 3);
         addStone(Player.TWO, 5, 5);
 
+        for(Player player: Player.values()){
+            punishZone.put(player, 0);
+            treasureZone.put(player, 0);
+        }
+
     }
 
     public void addStone(Player player, int pitId, int size) {
-        for (int i = 0; i < size; i++)
-            pits.get(pitId).add(new Stone(player));
+        if (Player.isPlayerZone(pitId)) {
+            if (this.getCurrentPlayer().getPunishZoneId() == pitId) {
+                int val = punishZone.get(this.getCurrentPlayer());
+                val++;
+                punishZone.put(this.getCurrentPlayer(), val);
+            } else if (this.getCurrentPlayer().getTreasureZoneId() == pitId) {
+                int val = treasureZone.get(this.getCurrentPlayer());
+                val++;
+                treasureZone.put(this.getCurrentPlayer(), val);
+            }
+        } else
+            for (int i = 0; i < size; i++)
+                pits.get(pitId).add(new Stone(player));
     }
 
-    public void removeStone(int pitId, int size) {
-        for (int i = size - 1; i >= 0; i--)
-            pits.get(pitId).remove(i);
+    public void removeStone(int pitId, int size) throws GameException {
+
+        if (Player.isPlayerZone(pitId)) {
+            if (this.getCurrentPlayer().getPunishZoneId() == pitId) {
+                int val = punishZone.get(this.getCurrentPlayer());
+                if (val == 0) {
+                    throw new PunishZoneHasNoStoneException(this.getCurrentPlayer());
+                }
+                val--;
+                punishZone.put(this.getCurrentPlayer(), val);
+            } else if (this.getCurrentPlayer().getTreasureZoneId() == pitId) {
+                throw new TreasureZoneException(this.getCurrentPlayer());
+            }
+        } else
+            for (int i = size - 1; i >= 0; i--)
+                pits.get(pitId).remove(i);
+    }
+
+    public boolean hasStone(int pitId) throws GameException {
+        if (Player.isPlayerZone(pitId)) {
+            if (this.getCurrentPlayer().getPunishZoneId() == pitId) {
+                int val = punishZone.get(this.getCurrentPlayer());
+                return val>0;
+            } else if (this.getCurrentPlayer().getTreasureZoneId() == pitId) {
+                throw new TreasureZoneException(this.getCurrentPlayer());
+            }
+        } else {
+            if (pits.get(pitId).size() == 0) {
+                return false;
+            }
+            if (pits.get(pitId).get(0).getPlayer() == this.getCurrentPlayer()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isDestinationValid(int pitId)throws GameException {
+        if (Player.isPlayerZone(pitId)) {
+            if (this.getCurrentPlayer().getPunishZoneId() == pitId) {
+                throw new DestionationPunishZoneException();
+            } else if (this.getCurrentPlayer().getTreasureZoneId() == pitId) {
+               return true;
+            }
+        }else{
+            if (pits.get(pitId).size() == 0) {
+                return true;
+            }else{
+                Stone stone = pits.get(pitId).get(0);
+                if(stone.getPlayer() == this.getCurrentPlayer())
+                    return true;
+                else if(pits.get(pitId).size() > 1 ){
+                    throw new PitIsBlokedByComponentException(pitId);
+                }else if( pits.get(pitId).size() == 1){
+                    // tasi kir
+                    removeStone(pitId, 1);
+                    addStone(this.getCurrentPlayer().getOtherPlayer(), this.getCurrentPlayer().getOtherPlayer().getPunishZoneId() , 1);
+                }
+            }
+        }
+        return true;
     }
 
     public void rollDice() {
         int dice1;
         int dice2;
-        dice1 = (int) (Math.random() * 6);
-        dice2 = (int) (Math.random() * 6);
+
+        dice1 = (int) (Math.random() * 6 + 1);
+        dice2 = (int) (Math.random() * 6 + 1);
+
+        int totalCount = dice1 + dice2;
 
         moves.clear();
         if (dice1 == dice2) {
@@ -82,31 +166,6 @@ public class BackgammonBoard {
         } else {
             moves.add(dice1);
             moves.add(dice2);
-        }
-    }
-
-  
-
-    public void diceControl(Player player) {
-        int playerOneDice=0;
-        int playerTwoDice=0;
-        boolean notEqualDice = true;
-
-        while (notEqualDice) {
-            playerOneDice = (int) (Math.random() * 6);
-            playerTwoDice = (int) (Math.random() * 6);
-
-            if (playerOneDice != playerTwoDice) {
-                notEqualDice = false;
-                break;
-            }
-        }
-        if (playerOneDice < playerTwoDice) {
-            currentPlayer = Player.TWO;
-            nextPlayer = Player.ONE;
-        } else {
-            currentPlayer = Player.ONE;
-            nextPlayer = Player.TWO;
         }
     }
 

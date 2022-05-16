@@ -6,4 +6,9 @@ public class WrongMoveException extends GameException{
     public WrongMoveException(Player player , int src, int dest){
         super("Wrong movement for player : "+player+ ", from : "+ src+ ", to : "+dest);
     }
+
+    public WrongMoveException(Player player , int src, int dest,String message){
+        super("Wrong movement for player : "+player+ ", from : "+ src+ ", to : "+dest+ ", due to : "+message);
+    }
 }
+
