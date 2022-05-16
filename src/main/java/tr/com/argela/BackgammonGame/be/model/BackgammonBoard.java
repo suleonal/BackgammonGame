@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.websocket.Session;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -45,14 +47,14 @@ public class BackgammonBoard {
         }
 
         addStone(Player.ONE, 0, 2);
-        addStone(Player.ONE, 9, 5);
-        addStone(Player.ONE, 13, 3);
-        addStone(Player.ONE, 15, 5);
+        addStone(Player.ONE, 11, 5);
+        addStone(Player.ONE, 16, 3);
+        addStone(Player.ONE, 18, 5);
 
-        addStone(Player.TWO, 19, 2);
-        addStone(Player.TWO, 10, 5);
-        addStone(Player.TWO, 6, 3);
-        addStone(Player.TWO, 4, 5);
+        addStone(Player.TWO, 23, 2);
+        addStone(Player.TWO, 12, 5);
+        addStone(Player.TWO, 7, 3);
+        addStone(Player.TWO, 5, 5);
 
     }
 
@@ -62,7 +64,7 @@ public class BackgammonBoard {
     }
 
     public void removeStone(int pitId, int size) {
-        for (int i = size - 1; i > 0; i--)
+        for (int i = size - 1; i >= 0; i--)
             pits.get(pitId).remove(i);
     }
 
@@ -83,18 +85,7 @@ public class BackgammonBoard {
         }
     }
 
-    public void move(Player player, int source, int dest) {
-
-        int moveValue = Math.abs(source - dest);
-        // kullanıcının yapmak istediği hareket, move listesinde var mı?
-        if (moveValue == moves.get(0) || moveValue == moves.get(1)) {
-
-            pits.get(source).remove(0);
-            pits.get(dest).add(new Stone(player));
-
-        }
-
-    }
+  
 
     public void diceControl(Player player) {
         int playerOneDice=0;

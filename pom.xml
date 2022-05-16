@@ -10,11 +10,12 @@
 	</parent>
 	<groupId>tr.com.argela.tavlagame</groupId>
 	<artifactId>be</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>be</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Sule Backgammon BE</description>
 	<properties>
 		<java.version>11</java.version>
+	
 	</properties>
 	<dependencies>
 		<dependency>

@@ -53,7 +53,7 @@ public class BackgammonController {
     @GetMapping("/move/{sessionId}/{source}/{dest}")
     public ResponseEntity<BackgammonResponse> move(@PathVariable String sessionId,@PathVariable int source,@PathVariable int dest) {
         try {
-            backgammonService.rollDice(sessionId);
+            backgammonService.move(sessionId,source,dest);
             BackgammonBoard BackgammonBoard = backgammonService.getBackgammonBoard(sessionId);
             return new ResponseEntity<>(new BackgammonResponse(sessionId, BackgammonBoard), HttpStatus.OK);
         } catch (GameException ex) {
