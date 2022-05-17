@@ -63,7 +63,17 @@ public class BackgammonBoard {
         addStone(Player.TWO, 7, 3);
         addStone(Player.TWO, 5, 5);
 
-        for(Player player: Player.values()){
+        // addStone(Player.TWO, 19, 1);
+        // addStone(Player.TWO, 20, 1);
+        // addStone(Player.TWO, 21, 1);
+        // addStone(Player.TWO, 22, 1);
+
+        moves.add(6);
+        moves.add(6);
+        moves.add(6);
+        moves.add(6);
+
+        for (Player player : Player.values()) {
             punishZone.put(player, 0);
             treasureZone.put(player, 0);
         }
@@ -72,14 +82,14 @@ public class BackgammonBoard {
 
     public void addStone(Player player, int pitId, int size) {
         if (Player.isPlayerZone(pitId)) {
-            if (this.getCurrentPlayer().getPunishZoneId() == pitId) {
-                int val = punishZone.get(this.getCurrentPlayer());
+            if (player.getPunishZoneId() == pitId) {
+                int val = punishZone.get(player);
                 val++;
-                punishZone.put(this.getCurrentPlayer(), val);
-            } else if (this.getCurrentPlayer().getTreasureZoneId() == pitId) {
-                int val = treasureZone.get(this.getCurrentPlayer());
+                punishZone.put(player, val);
+            } else if (player.getTreasureZoneId() == pitId) {
+                int val = treasureZone.get(player);
                 val++;
-                treasureZone.put(this.getCurrentPlayer(), val);
+                treasureZone.put(player, val);
             }
         } else
             for (int i = 0; i < size; i++)
@@ -108,7 +118,7 @@ public class BackgammonBoard {
         if (Player.isPlayerZone(pitId)) {
             if (this.getCurrentPlayer().getPunishZoneId() == pitId) {
                 int val = punishZone.get(this.getCurrentPlayer());
-                return val>0;
+                return val > 0;
             } else if (this.getCurrentPlayer().getTreasureZoneId() == pitId) {
                 throw new TreasureZoneException(this.getCurrentPlayer());
             }
@@ -123,26 +133,28 @@ public class BackgammonBoard {
         return false;
     }
 
-    public boolean isDestinationValid(int pitId)throws GameException {
+    public boolean isDestinationValid(int pitId) throws GameException {
         if (Player.isPlayerZone(pitId)) {
             if (this.getCurrentPlayer().getPunishZoneId() == pitId) {
                 throw new DestionationPunishZoneException();
             } else if (this.getCurrentPlayer().getTreasureZoneId() == pitId) {
-               return true;
+                return true;
             }
-        }else{
+        } else {
             if (pits.get(pitId).size() == 0) {
                 return true;
-            }else{
+            } else {
                 Stone stone = pits.get(pitId).get(0);
-                if(stone.getPlayer() == this.getCurrentPlayer())
+                if (stone.getPlayer() == this.getCurrentPlayer())
                     return true;
-                else if(pits.get(pitId).size() > 1 ){
+                else if (pits.get(pitId).size() > 1) {
                     throw new PitIsBlokedByComponentException(pitId);
-                }else if( pits.get(pitId).size() == 1){
+                } else if (pits.get(pitId).size() == 1) {
                     // tasi kir
                     removeStone(pitId, 1);
-                    addStone(this.getCurrentPlayer().getOtherPlayer(), this.getCurrentPlayer().getOtherPlayer().getPunishZoneId() , 1);
+                    addStone(this.getCurrentPlayer().getOtherPlayer(),
+                            this.getCurrentPlayer().getOtherPlayer().getPunishZoneId(), 1);
+
                 }
             }
         }

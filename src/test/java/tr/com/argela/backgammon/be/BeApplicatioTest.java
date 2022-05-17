@@ -1,3 +1,5 @@
+
+  
 package tr.com.argela.backgammon.be;
 
 import static org.junit.Assert.assertThrows;
@@ -31,7 +33,7 @@ class BackgammonTest {
 	@Autowired
 	BackgammonService backgammonService;
 
-	// @Test
+	@Test
 	void contextLoads() {
 	}
 
@@ -41,7 +43,7 @@ class BackgammonTest {
 		assert token != null;
 	}
 
-	@Test
+	//@Test
 	public void test_get_board() throws GameException {
 		String sessionId = createGame();
 		BackgammonBoard board =  backgammonService.getBackgammonBoard(sessionId);
@@ -61,7 +63,7 @@ class BackgammonTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void test_success_move() throws GameException {
 		String sessionId = createGame();
 		BackgammonBoard board =  backgammonService.getBackgammonBoard(sessionId);
@@ -114,12 +116,28 @@ class BackgammonTest {
 
 		backgammonService.move(sessionId, 18, 20);
 		backgammonService.move(sessionId, 18, 21);
-		System.out.println("Punish:"+board.getPunishZone().get(Player.TWO));
+		System.out.println("Punish:"+board.getPunishZone().get(Player.TWO)) ;
 		assert board.getPunishZone().get(Player.TWO) ==2;
+	}
+
+	//@Test
+	public void test_send_stone_to_treasure() throws GameException {
+		String sessionId = createGame();
+		BackgammonBoard board =  backgammonService.getBackgammonBoard(sessionId);
+		board.getMoves().add(6);
+		board.getMoves().add(6);
+		
+	
+		backgammonService.move(sessionId, 18, Player.ONE.getTreasureZoneId());
+		backgammonService.move(sessionId, 18, Player.ONE.getTreasureZoneId());
+	
+		assert board.getTreasureZone().get(Player.ONE) ==2;
 	}
 
 	String createGame() {
 		return backgammonService.createNewGame();
 	}
+
+	
 
 }

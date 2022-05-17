@@ -110,6 +110,7 @@ public class BackgammonService {
         if(!backgammonBoard.isDestinationValid(dest)){
             throw new WrongMoveException(player, source, dest, " not valid action");
         }
+
     }
 
     public void move(String sessionId, int source, int dest) throws GameException {
@@ -127,19 +128,6 @@ public class BackgammonService {
             board.setCurrentPlayer(board.getCurrentPlayer().getOtherPlayer());
         }
 
-        // if (board.getCurrentPlayer().getOtherPlayer().== 0 ) {
-
-          
-
-        // } else if (board.getCurrentPlayer().getOtherPlayer().pits == 1) {
-        //     board.removeStone(source, 1);
-        //     board.addStone(board.getCurrentPlayer(), dest, 1);
-
-        //     //diger oyuncunun taşı kenara alınır
-        // }
-        // if (board.getMoves().size() == 0) {
-        //     board.setCurrentPlayer(board.getCurrentPlayer().getOtherPlayer());
-        // }
 
     }
 
