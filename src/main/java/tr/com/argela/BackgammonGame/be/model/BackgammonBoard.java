@@ -65,15 +65,9 @@ public class BackgammonBoard {
             addStone(Player.TWO, 7, 3);
             addStone(Player.TWO, 5, 5);
 
-            // addStone(Player.ONE, 18, 15);
         } catch (GameException e) {
             e.printStackTrace();
         }
-
-        // moves.add(6);
-        // moves.add(6);
-        // moves.add(6);
-        // moves.add(6);
 
         for (Player player : Player.values()) {
             punishZone.put(player, 0);
@@ -120,18 +114,18 @@ public class BackgammonBoard {
         }
 
         total += getTreasureZone().get(player);
-        System.out.println("Total Stone:" + total + " , player:" + player);
+       
         for (int i = begin; i <= end; i++) {
             List<Stone> stones = pits.get(i);
             if (stones.isEmpty() || stones.get(0).getPlayer() != player) {
-                System.out.println("Total Stone:" + total + " , pit:" + i);
+               
                 continue;
             }
 
-            System.out.println("Total Stone:" + total + " , pit" + i + " , size: " + pits.get(i).size());
+            
             total += pits.get(i).size();
         }
-        System.out.println("Total stone:" + total + " in :" + begin + " - " + end);
+       
         return total == 15;
     }
 

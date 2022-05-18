@@ -57,23 +57,34 @@ public class BackgammonService {
 
     private int validateDice(BackgammonBoard backgammonBoard, int source, int dest) throws GameException {
         if (Player.isPunishmentZone(source)) {
-            source = backgammonBoard.getCurrentPlayer() == Player.ONE ? -1:24;
+            source = backgammonBoard.getCurrentPlayer() == Player.ONE ? -1 : 24;
         }
 
         if (Player.isTreasureZone(dest)) {
-            dest = backgammonBoard.getCurrentPlayer() == Player.ONE ? 24:-1;
+            dest = backgammonBoard.getCurrentPlayer() == Player.ONE ? 24 : -1;
         }
 
         int requestedMove = Math.abs(source - dest);
 
         for (int index = backgammonBoard.getMoves().size() - 1; index >= 0; index--) {
 
-            Integer move = backgammonBoard.getMoves().get(index);
+            if (backgammonBoard.getCurrentPlayer() == Player.ONE) {
+                if (source == -1) {
+                   //0 dan 5 e 
+                }if(source>dest){
+                    
+                }
 
-            if (move == requestedMove) {
-                backgammonBoard.getMoves().remove(index);
-                return requestedMove;
             }
+            for (int i = 18; i <= 23; i++) {
+                Integer move = backgammonBoard.getMoves().get(index);
+
+                if (move == requestedMove) {
+                    backgammonBoard.getMoves().remove(index);
+                    return requestedMove;
+                }
+            }
+
         }
         throw new WrongMoveException(backgammonBoard.getCurrentPlayer(), source, dest);
     }

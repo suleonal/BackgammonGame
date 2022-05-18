@@ -27,7 +27,7 @@ import tr.com.argela.BackgammonGame.be.service.BackgammonService;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = BeApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
-class BackgammonTest {
+public class BackgammonTest {
 
 	@Autowired
 	BackgammonService backgammonService;
@@ -122,6 +122,8 @@ class BackgammonTest {
 		BackgammonBoard board = backgammonService.getBackgammonBoard(sessionId);
 		board.getMoves().add(6);
 		board.getMoves().add(6);
+		board.getMoves().add(6);
+		board.getMoves().add(6);
 
 		for (int i = 0; i <= 23; i++) {
 			board.getPits().get(i).clear();
@@ -132,7 +134,8 @@ class BackgammonTest {
 		backgammonService.move(sessionId, 18, Player.ONE.getTreasureZoneId());
 		backgammonService.move(sessionId, 18, Player.ONE.getTreasureZoneId());
 
-		assert board.getTreasureZone().get(Player.ONE) == 2;
+		
+		assert board.getTreasureZone().get(Player.ONE) == 13;
 	}
 
 	@Test
