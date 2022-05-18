@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import tr.com.argela.BackgammonGame.be.constant.GameState;
 import tr.com.argela.BackgammonGame.be.constant.Player;
+import tr.com.argela.BackgammonGame.be.exception.AllStoneNotIsPlayerZoneException;
 import tr.com.argela.BackgammonGame.be.exception.DestionationPunishZoneException;
 import tr.com.argela.BackgammonGame.be.exception.GameException;
 import tr.com.argela.BackgammonGame.be.exception.PitIsBlokedByComponentException;
@@ -53,25 +54,26 @@ public class BackgammonBoard {
             pits.put(pitId, new ArrayList<>());
         }
 
-        addStone(Player.ONE, 0, 2);
-        addStone(Player.ONE, 11, 5);
-        addStone(Player.ONE, 16, 3);
-        addStone(Player.ONE, 18, 5);
+        try {
+            addStone(Player.ONE, 0, 2);
+            addStone(Player.ONE, 11, 5);
+            addStone(Player.ONE, 16, 3);
+            addStone(Player.ONE, 18, 5);
 
-        addStone(Player.TWO, 23, 2);
-        addStone(Player.TWO, 12, 5);
-        addStone(Player.TWO, 7, 3);
-        addStone(Player.TWO, 5, 5);
+            addStone(Player.TWO, 23, 2);
+            addStone(Player.TWO, 12, 5);
+            addStone(Player.TWO, 7, 3);
+            addStone(Player.TWO, 5, 5);
 
-        // addStone(Player.TWO, 19, 1);
-        // addStone(Player.TWO, 20, 1);
-        // addStone(Player.TWO, 21, 1);
-        // addStone(Player.TWO, 22, 1);
+            // addStone(Player.ONE, 18, 15);
+        } catch (GameException e) {
+            e.printStackTrace();
+        }
 
-        moves.add(6);
-        moves.add(6);
-        moves.add(6);
-        moves.add(6);
+        // moves.add(6);
+        // moves.add(6);
+        // moves.add(6);
+        // moves.add(6);
 
         for (Player player : Player.values()) {
             punishZone.put(player, 0);
@@ -80,20 +82,73 @@ public class BackgammonBoard {
 
     }
 
-    public void addStone(Player player, int pitId, int size) {
+    public void addStone(Player player, int pitId, int size) throws GameException {
         if (Player.isPlayerZone(pitId)) {
             if (player.getPunishZoneId() == pitId) {
                 int val = punishZone.get(player);
                 val++;
                 punishZone.put(player, val);
             } else if (player.getTreasureZoneId() == pitId) {
+                if (!isAllStoneInPlayerZone(player)) {
+                    throw new AllStoneNotIsPlayerZoneException();
+                }
                 int val = treasureZone.get(player);
                 val++;
                 treasureZone.put(player, val);
             }
         } else
             for (int i = 0; i < size; i++)
-                pits.get(pitId).add(new Stone(player));
+                pits.get(pitId).add(new Stone(player, isInPlayerZone(player, pitId)));
+    }
+
+    private boolean isAllStoneInPlayerZone(Player player) {
+        int total = 0;
+        int begin = 0;
+        int end = 0;
+
+        switch (player) {
+            case ONE: {
+                begin = 18;
+                end = 23;
+                break;
+            }
+            case TWO: {
+                begin = 0;
+                end = 5;
+                break;
+            }
+        }
+
+        total += getTreasureZone().get(player);
+        System.out.println("Total Stone:" + total + " , player:" + player);
+        for (int i = begin; i <= end; i++) {
+            List<Stone> stones = pits.get(i);
+            if (stones.isEmpty() || stones.get(0).getPlayer() != player) {
+                System.out.println("Total Stone:" + total + " , pit:" + i);
+                continue;
+            }
+
+            System.out.println("Total Stone:" + total + " , pit" + i + " , size: " + pits.get(i).size());
+            total += pits.get(i).size();
+        }
+        System.out.println("Total stone:" + total + " in :" + begin + " - " + end);
+        return total == 15;
+    }
+
+    private boolean isInPlayerZone(Player player, int pitId) {
+        switch (player) {
+            case ONE: {
+                if (pitId >= 18 && pitId <= 23)
+                    return true;
+                break;
+            }
+            case TWO: {
+                if (pitId >= 0 && pitId <= 5)
+                    return true;
+                break;
+            }
+        }
+        return false;
     }
 
     public void removeStone(int pitId, int size) throws GameException {

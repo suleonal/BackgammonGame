@@ -28,4 +28,20 @@ public enum Player {
         }
         return false;
     }
+
+    public static boolean isPunishmentZone(int pitId) {
+        for (Player player : values()) {
+            if (player.getPunishZoneId() == pitId )
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean isTreasureZone(int pitId) {
+        for (Player player : values()) {
+            if (player.getTreasureZoneId() == pitId )
+                return true;
+        }
+        return false;
+    }
 }

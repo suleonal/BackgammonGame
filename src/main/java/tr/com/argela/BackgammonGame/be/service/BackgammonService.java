@@ -56,6 +56,14 @@ public class BackgammonService {
     }
 
     private int validateDice(BackgammonBoard backgammonBoard, int source, int dest) throws GameException {
+        if (Player.isPunishmentZone(source)) {
+            source = backgammonBoard.getCurrentPlayer() == Player.ONE ? -1:24;
+        }
+
+        if (Player.isTreasureZone(dest)) {
+            dest = backgammonBoard.getCurrentPlayer() == Player.ONE ? 24:-1;
+        }
+
         int requestedMove = Math.abs(source - dest);
 
         for (int index = backgammonBoard.getMoves().size() - 1; index >= 0; index--) {
@@ -71,27 +79,27 @@ public class BackgammonService {
     }
 
     // public void diceControl(Player player) {
-    //     BackgammonBoard board;
-    //     int playerOneDice = 0;
-    //     int playerTwoDice = 0;
-    //     boolean notEqualDice = true;
+    // BackgammonBoard board;
+    // int playerOneDice = 0;
+    // int playerTwoDice = 0;
+    // boolean notEqualDice = true;
 
-    //     while (notEqualDice) {
-    //         playerOneDice = (int) (Math.random() * 6 + 1);
-    //         playerTwoDice = (int) (Math.random() * 6 + 1);
+    // while (notEqualDice) {
+    // playerOneDice = (int) (Math.random() * 6 + 1);
+    // playerTwoDice = (int) (Math.random() * 6 + 1);
 
-    //         if (playerOneDice != playerTwoDice) {
-    //             notEqualDice = false;
-    //             break;
-    //         }
-    //     }
-    //     if (playerOneDice < playerTwoDice) {
-    //         board.getCurrentPlayer() = Player.TWO;
-    //         nextPlayer = Player.ONE;
-    //     } else {
-    //         currentPlayer = Player.ONE;
-    //         nextPlayer = Player.TWO;
-    //     }
+    // if (playerOneDice != playerTwoDice) {
+    // notEqualDice = false;
+    // break;
+    // }
+    // }
+    // if (playerOneDice < playerTwoDice) {
+    // board.getCurrentPlayer() = Player.TWO;
+    // nextPlayer = Player.ONE;
+    // } else {
+    // currentPlayer = Player.ONE;
+    // nextPlayer = Player.TWO;
+    // }
     // }
 
     public void validateMove(BackgammonBoard backgammonBoard, int source, int dest) throws GameException {
@@ -101,13 +109,11 @@ public class BackgammonService {
             throw new WrongMoveException(player, source, dest);
         }
 
-        
-
-        if(!backgammonBoard.hasStone(source)){
+        if (!backgammonBoard.hasStone(source)) {
             throw new WrongMoveException(player, source, dest, " has not stone on source pit");
         }
-        
-        if(!backgammonBoard.isDestinationValid(dest)){
+
+        if (!backgammonBoard.isDestinationValid(dest)) {
             throw new WrongMoveException(player, source, dest, " not valid action");
         }
 
@@ -119,15 +125,14 @@ public class BackgammonService {
 
         int requestedMove = validateDice(board, source, dest);
 
-        validateMove(board,source,dest);
+        validateMove(board, source, dest);
 
-        board.removeStone(source, 1);
         board.addStone(board.getCurrentPlayer(), dest, 1);
+        board.removeStone(source, 1);
 
-        if(board.getMoves().size()==0){
+        if (board.getMoves().size() == 0) {
             board.setCurrentPlayer(board.getCurrentPlayer().getOtherPlayer());
         }
-
 
     }
 
