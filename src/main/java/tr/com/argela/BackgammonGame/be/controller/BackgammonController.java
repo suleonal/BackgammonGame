@@ -35,7 +35,7 @@ public class BackgammonController {
             BackgammonBoard BackgammonBoard = backgammonService.getBackgammonBoard(sessionId);
             return new ResponseEntity<>(new BackgammonResponse(sessionId, BackgammonBoard), HttpStatus.OK);
         } catch (GameException ex) {
-            logger.error("[getBoard][FAIL] sessionId:" + sessionId + ", msg:" + ex.getMessage());
+            logger.error("[getBoard][FAIL] sessionId:" + sessionId + ", msg:" + ex.getMessage(),ex);
             return new ResponseEntity<>(new BackgammonResponse(sessionId, ex), HttpStatus.UNAUTHORIZED);
         }
     }
@@ -46,7 +46,7 @@ public class BackgammonController {
             BackgammonBoard BackgammonBoard = backgammonService.getBackgammonBoard(sessionId);
             return new ResponseEntity<>(new BackgammonResponse(sessionId, BackgammonBoard), HttpStatus.OK);
         } catch (GameException ex) {
-            logger.error("[getBoard][FAIL] sessionId:" + sessionId + ", msg:" + ex.getMessage());
+            logger.error("[getBoard][FAIL] sessionId:" + sessionId + ", msg:" + ex.getMessage(),ex);
             return new ResponseEntity<>(new BackgammonResponse(sessionId, ex), HttpStatus.UNAUTHORIZED);
         }
     }
@@ -57,7 +57,7 @@ public class BackgammonController {
             BackgammonBoard BackgammonBoard = backgammonService.getBackgammonBoard(sessionId);
             return new ResponseEntity<>(new BackgammonResponse(sessionId, BackgammonBoard), HttpStatus.OK);
         } catch (GameException ex) {
-            logger.error("[getBoard][FAIL] sessionId:" + sessionId + ", msg:" + ex.getMessage());
+            logger.error("[getBoard][FAIL] sessionId:" + sessionId + ", msg:" + ex.getMessage(),ex);
             return new ResponseEntity<>(new BackgammonResponse(sessionId, ex), HttpStatus.UNAUTHORIZED);
         }
     }

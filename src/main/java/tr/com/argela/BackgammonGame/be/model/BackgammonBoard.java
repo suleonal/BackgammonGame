@@ -17,6 +17,7 @@ import tr.com.argela.BackgammonGame.be.exception.DestionationPunishZoneException
 import tr.com.argela.BackgammonGame.be.exception.GameException;
 import tr.com.argela.BackgammonGame.be.exception.PitIsBlokedByComponentException;
 import tr.com.argela.BackgammonGame.be.exception.PunishZoneHasNoStoneException;
+import tr.com.argela.BackgammonGame.be.exception.PunishZoneHasStoneException;
 import tr.com.argela.BackgammonGame.be.exception.TreasureZoneException;
 import tr.com.argela.BackgammonGame.be.exception.WrongMoveException;
 
@@ -114,18 +115,17 @@ public class BackgammonBoard {
         }
 
         total += getTreasureZone().get(player);
-       
+
         for (int i = begin; i <= end; i++) {
             List<Stone> stones = pits.get(i);
             if (stones.isEmpty() || stones.get(0).getPlayer() != player) {
-               
+
                 continue;
             }
 
-            
             total += pits.get(i).size();
         }
-       
+
         return total == 15;
     }
 
@@ -182,29 +182,41 @@ public class BackgammonBoard {
         return false;
     }
 
-    public boolean isDestinationValid(int pitId) throws GameException {
-        if (Player.isPlayerZone(pitId)) {
-            if (this.getCurrentPlayer().getPunishZoneId() == pitId) {
+    public boolean isDestinationValid(int destPitId) throws GameException {
+        if (Player.isPlayerZone(destPitId)) {
+            if (this.getCurrentPlayer().getPunishZoneId() == destPitId) {
                 throw new DestionationPunishZoneException();
-            } else if (this.getCurrentPlayer().getTreasureZoneId() == pitId) {
+            } else if (this.getCurrentPlayer().getTreasureZoneId() == destPitId) {
                 return true;
             }
         } else {
-            if (pits.get(pitId).size() == 0) {
+            if (pits.get(destPitId).size() == 0) {
                 return true;
             } else {
-                Stone stone = pits.get(pitId).get(0);
+                Stone stone = pits.get(destPitId).get(0);
                 if (stone.getPlayer() == this.getCurrentPlayer())
                     return true;
-                else if (pits.get(pitId).size() > 1) {
-                    throw new PitIsBlokedByComponentException(pitId);
-                } else if (pits.get(pitId).size() == 1) {
+                else if (pits.get(destPitId).size() > 1) {
+                    throw new PitIsBlokedByComponentException(destPitId);
+                } else if (pits.get(destPitId).size() == 1) {
                     // tasi kir
-                    removeStone(pitId, 1);
+                    removeStone(destPitId, 1);
                     addStone(this.getCurrentPlayer().getOtherPlayer(),
                             this.getCurrentPlayer().getOtherPlayer().getPunishZoneId(), 1);
 
                 }
+            }
+        }
+        return true;
+    }
+
+    public boolean isPunishmentZoneHasStone(int sourcePitId,int destPitId) throws GameException {
+        int val = punishZone.get(this.getCurrentPlayer());
+        if (val != 0) {
+            if (sourcePitId == -1 || sourcePitId == -3) {
+                return true;
+            } else {
+                throw new PunishZoneHasStoneException();
             }
         }
         return true;

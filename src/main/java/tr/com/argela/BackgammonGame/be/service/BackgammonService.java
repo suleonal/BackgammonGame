@@ -12,6 +12,7 @@ import tr.com.argela.BackgammonGame.be.config.GameConfig;
 import tr.com.argela.BackgammonGame.be.constant.Player;
 import tr.com.argela.BackgammonGame.be.exception.DestionationPunishZoneException;
 import tr.com.argela.BackgammonGame.be.exception.GameException;
+import tr.com.argela.BackgammonGame.be.exception.PunishZoneHasStoneException;
 import tr.com.argela.BackgammonGame.be.exception.WrongMoveException;
 import tr.com.argela.BackgammonGame.be.model.BackgammonBoard;
 import tr.com.argela.BackgammonGame.be.repository.BackgommonRepository;
@@ -68,50 +69,16 @@ public class BackgammonService {
 
         for (int index = backgammonBoard.getMoves().size() - 1; index >= 0; index--) {
 
-            if (backgammonBoard.getCurrentPlayer() == Player.ONE) {
-                if (source == -1) {
-                   //0 dan 5 e 
-                }if(source>dest){
-                    
-                }
+            Integer move = backgammonBoard.getMoves().get(index);
 
-            }
-            for (int i = 18; i <= 23; i++) {
-                Integer move = backgammonBoard.getMoves().get(index);
-
-                if (move == requestedMove) {
-                    backgammonBoard.getMoves().remove(index);
-                    return requestedMove;
-                }
+            if (move == requestedMove) {
+                backgammonBoard.getMoves().remove(index);
+                return requestedMove;
             }
 
         }
         throw new WrongMoveException(backgammonBoard.getCurrentPlayer(), source, dest);
     }
-
-    // public void diceControl(Player player) {
-    // BackgammonBoard board;
-    // int playerOneDice = 0;
-    // int playerTwoDice = 0;
-    // boolean notEqualDice = true;
-
-    // while (notEqualDice) {
-    // playerOneDice = (int) (Math.random() * 6 + 1);
-    // playerTwoDice = (int) (Math.random() * 6 + 1);
-
-    // if (playerOneDice != playerTwoDice) {
-    // notEqualDice = false;
-    // break;
-    // }
-    // }
-    // if (playerOneDice < playerTwoDice) {
-    // board.getCurrentPlayer() = Player.TWO;
-    // nextPlayer = Player.ONE;
-    // } else {
-    // currentPlayer = Player.ONE;
-    // nextPlayer = Player.TWO;
-    // }
-    // }
 
     public void validateMove(BackgammonBoard backgammonBoard, int source, int dest) throws GameException {
         if (!(Player.isPlayerZone(source) || Player.isPlayerZone(dest)
@@ -128,6 +95,9 @@ public class BackgammonService {
             throw new WrongMoveException(player, source, dest, " not valid action");
         }
 
+        if (!backgammonBoard.isPunishmentZoneHasStone(source, dest)) {
+            throw new PunishZoneHasStoneException();
+        }
     }
 
     public void move(String sessionId, int source, int dest) throws GameException {
