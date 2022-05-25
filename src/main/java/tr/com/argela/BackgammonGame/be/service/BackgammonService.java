@@ -1,5 +1,7 @@
 package tr.com.argela.BackgammonGame.be.service;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import tr.com.argela.BackgammonGame.be.config.GameConfig;
 import tr.com.argela.BackgammonGame.be.constant.Player;
+import tr.com.argela.BackgammonGame.be.exception.CurrentPlayerIsChangedException;
 import tr.com.argela.BackgammonGame.be.exception.DestionationPunishZoneException;
 import tr.com.argela.BackgammonGame.be.exception.GameException;
 import tr.com.argela.BackgammonGame.be.exception.PunishZoneHasStoneException;
@@ -56,35 +59,16 @@ public class BackgammonService {
         board.rollDice();
     }
 
-    private int validateDice(BackgammonBoard backgammonBoard, int source, int dest) throws GameException {
-        if (Player.isPunishmentZone(source)) {
-            source = backgammonBoard.getCurrentPlayer() == Player.ONE ? -1 : 24;
-        }
-
-        if (Player.isTreasureZone(dest)) {
-            dest = backgammonBoard.getCurrentPlayer() == Player.ONE ? 24 : -1;
-        }
-
-        int requestedMove = Math.abs(source - dest);
-
-        for (int index = backgammonBoard.getMoves().size() - 1; index >= 0; index--) {
-
-            Integer move = backgammonBoard.getMoves().get(index);
-
-            if (move == requestedMove) {
-                backgammonBoard.getMoves().remove(index);
-                return requestedMove;
-            }
-
-        }
-        throw new WrongMoveException(backgammonBoard.getCurrentPlayer(), source, dest);
-    }
-
-    public void validateMove(BackgammonBoard backgammonBoard, int source, int dest) throws GameException {
+    public void validateMove(BackgammonBoard backgammonBoard, int requestedMove, int source, int dest)
+            throws GameException {
         if (!(Player.isPlayerZone(source) || Player.isPlayerZone(dest)
                 || ((source >= 0 && source < gameConfig.getPitSize())
                         && (dest >= 0 && dest < gameConfig.getPitSize())))) {
             throw new WrongMoveException(player, source, dest);
+        }
+
+        if (!backgammonBoard.isPunishmentZoneHasStone(source, dest, requestedMove)) {
+            throw new PunishZoneHasStoneException();
         }
 
         if (!backgammonBoard.hasStone(source)) {
@@ -95,22 +79,20 @@ public class BackgammonService {
             throw new WrongMoveException(player, source, dest, " not valid action");
         }
 
-        if (!backgammonBoard.isPunishmentZoneHasStone(source, dest)) {
-            throw new PunishZoneHasStoneException();
-        }
     }
 
     public void move(String sessionId, int source, int dest) throws GameException {
 
         BackgammonBoard board = getBackgammonBoard(sessionId);
 
-        int requestedMove = validateDice(board, source, dest);
-
-        validateMove(board, source, dest);
-
-        board.addStone(board.getCurrentPlayer(), dest, 1);
-        board.removeStone(source, 1);
-
+        int requestedMove = board.validateDice(source, dest);
+        try {
+            validateMove(board, requestedMove, source, dest);
+            board.addStone(board.getCurrentPlayer(), dest, 1);
+            board.removeStone(source, 1);
+        } catch (CurrentPlayerIsChangedException e) {
+            System.out.println("");
+        }
         if (board.getMoves().size() == 0) {
             board.setCurrentPlayer(board.getCurrentPlayer().getOtherPlayer());
         }

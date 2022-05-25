@@ -19,6 +19,7 @@ import tr.com.argela.BackgammonGame.be.constant.Player;
 import tr.com.argela.BackgammonGame.be.exception.AllStoneNotIsPlayerZoneException;
 import tr.com.argela.BackgammonGame.be.exception.GameException;
 import tr.com.argela.BackgammonGame.be.exception.PitIsBlokedByComponentException;
+import tr.com.argela.BackgammonGame.be.exception.CurrentPlayerIsChangedException;
 import tr.com.argela.BackgammonGame.be.model.BackgammonBoard;
 import tr.com.argela.BackgammonGame.be.model.Stone;
 import tr.com.argela.BackgammonGame.be.service.BackgammonService;
@@ -152,6 +153,27 @@ public class BackgammonTest {
 
 	String createGame() {
 		return backgammonService.createNewGame();
+	}
+
+	@Test
+	public void test_current_player_changed() throws GameException{
+		String sessionId = createGame();
+		BackgammonBoard board = backgammonService.getBackgammonBoard(sessionId);
+
+		board.getMoves().add(2);
+		board.getMoves().add(3);
+
+		/*board.getPits().get(1).add(new Stone(Player.TWO));
+		board.getPits().get(1).add(new Stone(Player.TWO));*/
+		board.getPits().get(2).add(new Stone(Player.TWO));
+
+		board.getPunishZone().put(Player.ONE,1);
+
+		backgammonService.move(sessionId, -1, 1);
+		
+		/*assert board.getCurrentPlayer() == Player.TWO;*/
+		assert board.getPunishZone().get(Player.TWO)==1;
+		
 	}
 
 }

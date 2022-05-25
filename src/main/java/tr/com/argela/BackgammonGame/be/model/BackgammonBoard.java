@@ -2,9 +2,11 @@ package tr.com.argela.BackgammonGame.be.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -13,6 +15,7 @@ import lombok.Setter;
 import tr.com.argela.BackgammonGame.be.constant.GameState;
 import tr.com.argela.BackgammonGame.be.constant.Player;
 import tr.com.argela.BackgammonGame.be.exception.AllStoneNotIsPlayerZoneException;
+import tr.com.argela.BackgammonGame.be.exception.CurrentPlayerIsChangedException;
 import tr.com.argela.BackgammonGame.be.exception.DestionationPunishZoneException;
 import tr.com.argela.BackgammonGame.be.exception.GameException;
 import tr.com.argela.BackgammonGame.be.exception.PitIsBlokedByComponentException;
@@ -210,14 +213,68 @@ public class BackgammonBoard {
         return true;
     }
 
-    public boolean isPunishmentZoneHasStone(int sourcePitId,int destPitId) throws GameException {
+    public int validateDice(int source, int dest) throws GameException {
+        return validateDice(source, dest, true);
+    }
+
+    public int validateDice(int source, int dest, boolean removeMove) throws GameException {
+        if (Player.isPunishmentZone(source)) {
+            source = this.getCurrentPlayer() == Player.ONE ? -1 : 24;
+        }
+
+        if (Player.isTreasureZone(dest)) {
+            dest = this.getCurrentPlayer() == Player.ONE ? 24 : -1;
+        }
+
+        int requestedMove = Math.abs(source - dest);
+
+        for (int index = this.getMoves().size() - 1; index >= 0; index--) {
+
+            Integer move = this.getMoves().get(index);
+
+            if (move == requestedMove) {
+                if (removeMove)
+                    this.getMoves().remove(index);
+                return requestedMove;
+            }
+
+        }
+        if (removeMove)
+            throw new WrongMoveException(this.getCurrentPlayer(), source, dest);
+        return -1;
+    }
+
+    public boolean validPunishZoneMove() throws GameException {
+        Set<Integer> uniqueMoves = new HashSet<>();
+        for (Integer move : getMoves()) {
+            uniqueMoves.add(move);
+        }
+        int blockedPits = 0;
+        for (Integer move : uniqueMoves) {
+            int punishPitId = getCurrentPlayer() == Player.ONE ? -24 : -1;
+            int pos = Math.abs(move + punishPitId);
+            List<Stone> stones = getPits().get(pos);
+            if (stones.size() > 1 && stones.get(0).getPlayer() != getCurrentPlayer()) {
+                blockedPits++;
+            }
+        }
+        if (blockedPits == uniqueMoves.size()) {
+            throw new CurrentPlayerIsChangedException();
+        }
+        return true;
+    }
+
+    public boolean isPunishmentZoneHasStone(int sourcePitId, int destPitId, int requestedMove) throws GameException {
         int val = punishZone.get(this.getCurrentPlayer());
-        if (val != 0) {
+        if (val > 0) {
+
             if (sourcePitId == -1 || sourcePitId == -3) {
-                return true;
+                return validPunishZoneMove();
             } else {
+                moves.clear();
                 throw new PunishZoneHasStoneException();
             }
+
         }
         return true;
     }
