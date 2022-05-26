@@ -251,7 +251,7 @@ public class BackgammonBoard {
         }
         int blockedPits = 0;
         for (Integer move : uniqueMoves) {
-            int punishPitId = getCurrentPlayer() == Player.ONE ? -24 : -1;
+            int punishPitId = getCurrentPlayer() == Player.ONE ? -1 : -24;
             int pos = Math.abs(move + punishPitId);
             List<Stone> stones = getPits().get(pos);
             if (stones.size() > 1 && stones.get(0).getPlayer() != getCurrentPlayer()) {

@@ -91,7 +91,11 @@ public class BackgammonService {
             board.addStone(board.getCurrentPlayer(), dest, 1);
             board.removeStone(source, 1);
         } catch (CurrentPlayerIsChangedException e) {
-            System.out.println("");
+            System.out.println("User is changed due to no more valid moves");
+        }catch(GameException e){
+            if(requestedMove > -1){
+                board.getMoves().add(requestedMove);
+            }
         }
         if (board.getMoves().size() == 0) {
             board.setCurrentPlayer(board.getCurrentPlayer().getOtherPlayer());

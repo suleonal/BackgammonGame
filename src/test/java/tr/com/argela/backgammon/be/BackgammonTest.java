@@ -43,7 +43,7 @@ public class BackgammonTest {
 		assert token != null;
 	}
 
-	@Test
+	/*@Test
 	public void test_get_board() throws GameException {
 		String sessionId = createGame();
 		BackgammonBoard board = backgammonService.getBackgammonBoard(sessionId);
@@ -149,7 +149,7 @@ public class BackgammonTest {
 		assertThrows(AllStoneNotIsPlayerZoneException.class, () -> {
 			backgammonService.move(sessionId, 18, Player.ONE.getTreasureZoneId());
 		});
-	}
+	}*/
 
 	String createGame() {
 		return backgammonService.createNewGame();
@@ -163,16 +163,16 @@ public class BackgammonTest {
 		board.getMoves().add(2);
 		board.getMoves().add(3);
 
-		/*board.getPits().get(1).add(new Stone(Player.TWO));
-		board.getPits().get(1).add(new Stone(Player.TWO));*/
+		board.getPits().get(1).add(new Stone(Player.TWO));
+		board.getPits().get(1).add(new Stone(Player.TWO));
 		board.getPits().get(2).add(new Stone(Player.TWO));
 
-		board.getPunishZone().put(Player.ONE,1);
+		board.getPunishZone().put(Player.ONE,2);
 
-		backgammonService.move(sessionId, -1, 1);
+		backgammonService.move(sessionId, -1, 2);
 		
-		/*assert board.getCurrentPlayer() == Player.TWO;*/
-		assert board.getPunishZone().get(Player.TWO)==1;
+		assert board.getCurrentPlayer() == Player.TWO;
+		assert board.getPunishZone().get(Player.ONE)==1;
 		
 	}
 
