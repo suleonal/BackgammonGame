@@ -36,6 +36,8 @@ public class BackgammonBoard {
     GameState gameState;
     Map<Integer, List<Stone>> pits;
 
+    int currentDice = -1;
+
     List<Integer> moves = new ArrayList<>();
 
     Map<Player, Integer> punishZone = new HashMap();
@@ -235,6 +237,7 @@ public class BackgammonBoard {
             if (move == requestedMove) {
                 if (removeMove)
                     this.getMoves().remove(index);
+                currentDice = requestedMove;
                 return requestedMove;
             }
 
@@ -249,6 +252,7 @@ public class BackgammonBoard {
         for (Integer move : getMoves()) {
             uniqueMoves.add(move);
         }
+        uniqueMoves.add(currentDice);
         int blockedPits = 0;
         for (Integer move : uniqueMoves) {
             int punishPitId = getCurrentPlayer() == Player.ONE ? -1 : -24;

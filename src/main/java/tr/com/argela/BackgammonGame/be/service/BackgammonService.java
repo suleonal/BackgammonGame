@@ -96,6 +96,7 @@ public class BackgammonService {
             if(requestedMove > -1){
                 board.getMoves().add(requestedMove);
             }
+            throw e;
         }
         if (board.getMoves().size() == 0) {
             board.setCurrentPlayer(board.getCurrentPlayer().getOtherPlayer());
