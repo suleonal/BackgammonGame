@@ -176,4 +176,31 @@ public class BackgammonTest {
 		
 	}
 
+	@Test
+	public void test_treasure_zone() throws GameException{
+		String sessionId = createGame();
+		BackgammonBoard board = backgammonService.getBackgammonBoard(sessionId);
+
+		board.getPits().get(18).add(new Stone(Player.ONE));
+		board.getPits().get(18).add(new Stone(Player.ONE));
+		board.getPits().get(18).add(new Stone(Player.ONE));
+		board.getPits().get(18).add(new Stone(Player.ONE));
+		board.getPits().get(18).add(new Stone(Player.ONE));
+		board.getPits().get(18).add(new Stone(Player.ONE));
+		board.getPits().get(18).add(new Stone(Player.ONE));
+		board.getPits().get(18).add(new Stone(Player.ONE));
+		board.getPits().get(21).add(new Stone(Player.ONE));
+		board.getPits().get(21).add(new Stone(Player.ONE));
+		board.getPits().get(21).add(new Stone(Player.ONE));
+		board.getPits().get(21).add(new Stone(Player.ONE));
+		board.getPits().get(21).add(new Stone(Player.ONE));
+		board.getPits().get(21).add(new Stone(Player.ONE));
+		board.getPits().get(21).add(new Stone(Player.ONE));
+		
+
+		board.getMoves().add(6);
+		board.getMoves().add(3);
+
+		assert board.getTreasureZone().get(Player.ONE)==2;
+	}
 }

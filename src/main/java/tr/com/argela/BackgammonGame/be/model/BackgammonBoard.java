@@ -70,6 +70,8 @@ public class BackgammonBoard {
             addStone(Player.TWO, 12, 5);
             addStone(Player.TWO, 7, 3);
             addStone(Player.TWO, 5, 5);
+           /* addStone(Player.ONE, 18, 15);*/
+            
 
         } catch (GameException e) {
             e.printStackTrace();
@@ -124,7 +126,7 @@ public class BackgammonBoard {
         for (int i = begin; i <= end; i++) {
             List<Stone> stones = pits.get(i);
             if (stones.isEmpty() || stones.get(0).getPlayer() != player) {
-
+        
                 continue;
             }
 
@@ -223,9 +225,9 @@ public class BackgammonBoard {
         if (Player.isPunishmentZone(source)) {
             source = this.getCurrentPlayer() == Player.ONE ? -1 : 24;
         }
-
+        boolean isTreasureZone=false;
         if (Player.isTreasureZone(dest)) {
-            dest = this.getCurrentPlayer() == Player.ONE ? 24 : -1;
+            isTreasureZone = true;
         }
 
         int requestedMove = Math.abs(source - dest);
@@ -234,14 +236,22 @@ public class BackgammonBoard {
 
             Integer move = this.getMoves().get(index);
 
-            if (move == requestedMove) {
+            if (move == requestedMove&& !isTreasureZone) {
                 if (removeMove)
                     this.getMoves().remove(index);
                 currentDice = requestedMove;
                 return requestedMove;
             }
 
+            if(isTreasureZone && move >= requestedMove){
+                if (removeMove)
+                this.getMoves().remove(index);
+                currentDice = requestedMove;
+                return requestedMove;
+            }
+
         }
+       
         if (removeMove)
             throw new WrongMoveException(this.getCurrentPlayer(), source, dest);
         return -1;
@@ -267,6 +277,7 @@ public class BackgammonBoard {
         }
         return true;
     }
+    
 
     public boolean isPunishmentZoneHasStone(int sourcePitId, int destPitId, int requestedMove) throws GameException {
         int val = punishZone.get(this.getCurrentPlayer());
