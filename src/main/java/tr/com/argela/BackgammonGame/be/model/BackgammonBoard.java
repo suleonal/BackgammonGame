@@ -70,7 +70,7 @@ public class BackgammonBoard {
             addStone(Player.TWO, 12, 5);
             addStone(Player.TWO, 7, 3);
             addStone(Player.TWO, 5, 5);
-           /* addStone(Player.ONE, 18, 15);*/
+           /* addStone(Player.ONE, 23, 15);*/
             
 
         } catch (GameException e) {
@@ -243,7 +243,7 @@ public class BackgammonBoard {
                 return requestedMove;
             }
 
-            if(isTreasureZone && move >= requestedMove){
+            if(isTreasureZone && move <= requestedMove){
                 if (removeMove)
                 this.getMoves().remove(index);
                 currentDice = requestedMove;
