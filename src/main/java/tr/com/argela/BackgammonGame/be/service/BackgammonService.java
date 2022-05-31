@@ -48,6 +48,7 @@ public class BackgammonService {
     private String createSessionId() {
         return UUID.randomUUID().toString();
     }
+    //generate et id yi
 
     public BackgammonBoard getBackgammonBoard(String sessionId) throws GameException {
         return backgammonRepository.getBySessionId(sessionId);

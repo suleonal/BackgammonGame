@@ -42,6 +42,7 @@ public class BackgammonBoard {
 
     Map<Player, Integer> punishZone = new HashMap();
     Map<Player, Integer> treasureZone = new HashMap();
+    Map<Player, PlayerInfo> playerSessionId = new HashMap();
 
     public BackgammonBoard(String sessionId, int pitSize) {
         this.sessionId = sessionId;
