@@ -5,6 +5,7 @@ import java.util.Map;
 
 import tr.com.argela.BackgammonGame.be.exception.GameSessionNotFoundException;
 import tr.com.argela.BackgammonGame.be.model.BackgammonBoard;
+import tr.com.argela.BackgammonGame.be.model.PlayerInfo;
 
 public class BackgammonRepositoryImpl implements BackgommonRepository {
 

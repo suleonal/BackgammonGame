@@ -1,23 +1,21 @@
 package tr.com.argela.BackgammonGame.be.service;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Sort;
 import org.springframework.stereotype.Service;
 
 import tr.com.argela.BackgammonGame.be.config.GameConfig;
 import tr.com.argela.BackgammonGame.be.constant.Player;
 import tr.com.argela.BackgammonGame.be.exception.CurrentPlayerIsChangedException;
-import tr.com.argela.BackgammonGame.be.exception.DestionationPunishZoneException;
 import tr.com.argela.BackgammonGame.be.exception.GameException;
+import tr.com.argela.BackgammonGame.be.exception.PlayerNotAuthorized;
 import tr.com.argela.BackgammonGame.be.exception.PunishZoneHasStoneException;
 import tr.com.argela.BackgammonGame.be.exception.WrongMoveException;
 import tr.com.argela.BackgammonGame.be.model.BackgammonBoard;
+import tr.com.argela.BackgammonGame.be.model.PlayerInfo;
 import tr.com.argela.BackgammonGame.be.repository.BackgommonRepository;
 
 @Service
@@ -33,26 +31,33 @@ public class BackgammonService {
     @Autowired
     GameConfig gameConfig;
 
-    public String createNewGame() {
+    public String createNewGame(String name, String ip) {
         String sessionId = createSessionId();
-        BackgammonBoard backgammonBoard = new BackgammonBoard(sessionId, gameConfig.getPitSize());
+        String playerOneSessionId = createSessionId();
+        PlayerInfo playerOneSession = new PlayerInfo(playerOneSessionId, name, ip);
+        BackgammonBoard backgammonBoard = new BackgammonBoard(sessionId, gameConfig.getPitSize(),playerOneSession);
         backgammonRepository.save(sessionId, backgammonBoard);
         if (logger.isInfoEnabled()) {
             logger.debug("[NewGame] sessionId:" + sessionId + " , pitSize:" + gameConfig.getPitSize());
         }
-
         return sessionId;
-
     }
 
+    public void join(String sessionId, String name, String ip) throws GameException{
+        String playerTwoSessionId = createSessionId();
+        BackgammonBoard backgammonBoard = getBackgammonBoard(sessionId);
+        PlayerInfo playerTwoSession = new PlayerInfo(playerTwoSessionId, name, ip);
+        backgammonBoard.setPlayerInfo(playerTwoSession);
+    }
+
+    // generate et id yi
     private String createSessionId() {
         return UUID.randomUUID().toString();
     }
-    //generate et id yi
+    
 
     public BackgammonBoard getBackgammonBoard(String sessionId) throws GameException {
         return backgammonRepository.getBySessionId(sessionId);
-
     }
 
     public void rollDice(String sessionId) throws GameException {
@@ -82,19 +87,26 @@ public class BackgammonService {
 
     }
 
-    public void move(String sessionId, int source, int dest) throws GameException {
+    public void move(String sessionId, PlayerInfo playerSessionId, int source, int dest) throws GameException {
 
         BackgammonBoard board = getBackgammonBoard(sessionId);
 
         int requestedMove = board.validateDice(source, dest);
+  
         try {
-            validateMove(board, requestedMove, source, dest);
-            board.addStone(board.getCurrentPlayer(), dest, 1);
-            board.removeStone(source, 1);
+            if(board.getCurrentPlayer()==Player.ONE){
+                //if(playerSessionId == board.getPlayerInfo()|| board.getPlayerInfo().playerTwoSessionId){
+                validateMove(board, requestedMove, source, dest);
+                board.addStone(board.getCurrentPlayer(), dest, 1);
+                board.removeStone(source, 1);
+                } else {
+                    throw new PlayerNotAuthorized();
+                
+            }
         } catch (CurrentPlayerIsChangedException e) {
             System.out.println("User is changed due to no more valid moves");
-        }catch(GameException e){
-            if(requestedMove > -1){
+        } catch (GameException e) {
+            if (requestedMove > -1) {
                 board.getMoves().add(requestedMove);
             }
             throw e;
@@ -104,5 +116,5 @@ public class BackgammonService {
         }
 
     }
-
+ 
 }

@@ -19,6 +19,7 @@ import tr.com.argela.BackgammonGame.be.exception.CurrentPlayerIsChangedException
 import tr.com.argela.BackgammonGame.be.exception.DestionationPunishZoneException;
 import tr.com.argela.BackgammonGame.be.exception.GameException;
 import tr.com.argela.BackgammonGame.be.exception.PitIsBlokedByComponentException;
+import tr.com.argela.BackgammonGame.be.exception.PlayerNotAuthorized;
 import tr.com.argela.BackgammonGame.be.exception.PunishZoneHasNoStoneException;
 import tr.com.argela.BackgammonGame.be.exception.PunishZoneHasStoneException;
 import tr.com.argela.BackgammonGame.be.exception.TreasureZoneException;
@@ -33,6 +34,7 @@ public class BackgammonBoard {
     @JsonIgnore
     Player nextPlayer;
     Player currentPlayer;
+    PlayerInfo playerInfo;
     GameState gameState;
     Map<Integer, List<Stone>> pits;
 
@@ -42,10 +44,10 @@ public class BackgammonBoard {
 
     Map<Player, Integer> punishZone = new HashMap();
     Map<Player, Integer> treasureZone = new HashMap();
-    Map<Player, PlayerInfo> playerSessionId = new HashMap();
 
-    public BackgammonBoard(String sessionId, int pitSize) {
+    public BackgammonBoard(String sessionId,  int pitSize, PlayerInfo playerSessionId) {
         this.sessionId = sessionId;
+        this.playerInfo=playerSessionId;
         initializedBoard(pitSize);
     }
 
@@ -71,8 +73,7 @@ public class BackgammonBoard {
             addStone(Player.TWO, 12, 5);
             addStone(Player.TWO, 7, 3);
             addStone(Player.TWO, 5, 5);
-           /* addStone(Player.ONE, 23, 15);*/
-            
+            /* addStone(Player.ONE, 23, 15); */
 
         } catch (GameException e) {
             e.printStackTrace();
@@ -127,7 +128,7 @@ public class BackgammonBoard {
         for (int i = begin; i <= end; i++) {
             List<Stone> stones = pits.get(i);
             if (stones.isEmpty() || stones.get(0).getPlayer() != player) {
-        
+
                 continue;
             }
 
@@ -226,7 +227,7 @@ public class BackgammonBoard {
         if (Player.isPunishmentZone(source)) {
             source = this.getCurrentPlayer() == Player.ONE ? -1 : 24;
         }
-        boolean isTreasureZone=false;
+        boolean isTreasureZone = false;
         if (Player.isTreasureZone(dest)) {
             isTreasureZone = true;
         }
@@ -237,22 +238,22 @@ public class BackgammonBoard {
 
             Integer move = this.getMoves().get(index);
 
-            if (move == requestedMove&& !isTreasureZone) {
+            if (move == requestedMove && !isTreasureZone) {
                 if (removeMove)
                     this.getMoves().remove(index);
                 currentDice = requestedMove;
                 return requestedMove;
             }
 
-            if(isTreasureZone && move <= requestedMove){
+            if (isTreasureZone && move <= requestedMove) {
                 if (removeMove)
-                this.getMoves().remove(index);
+                    this.getMoves().remove(index);
                 currentDice = requestedMove;
                 return requestedMove;
             }
 
         }
-       
+
         if (removeMove)
             throw new WrongMoveException(this.getCurrentPlayer(), source, dest);
         return -1;
@@ -278,7 +279,6 @@ public class BackgammonBoard {
         }
         return true;
     }
-    
 
     public boolean isPunishmentZoneHasStone(int sourcePitId, int destPitId, int requestedMove) throws GameException {
         int val = punishZone.get(this.getCurrentPlayer());
@@ -315,4 +315,5 @@ public class BackgammonBoard {
         }
     }
 
+  
 }

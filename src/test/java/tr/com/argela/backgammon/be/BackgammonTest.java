@@ -37,11 +37,11 @@ public class BackgammonTest {
 	void contextLoads() {
 	}
 
-	@Test
+	/*@Test
 	public void test_start() {
 		String token = createGame();
 		assert token != null;
-	}
+	}*/
 
 	/*@Test
 	public void test_get_board() throws GameException {
@@ -151,7 +151,7 @@ public class BackgammonTest {
 		});
 	}*/
 
-	String createGame() {
+	/*String createGame() {
 		return backgammonService.createNewGame();
 	}
 
@@ -202,5 +202,5 @@ public class BackgammonTest {
 		board.getMoves().add(3);
 
 		assert board.getTreasureZone().get(Player.ONE)==2;
-	}
+	}*/
 }
